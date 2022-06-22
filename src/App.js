@@ -6,7 +6,7 @@ function App() {
 
   const [dice, setDice] = React.useState(allNewDice())
   const [tenzies, setTenzies] = React.useState(false)
-  const [checkWinState, setCheckWinState] = React.useState(false)
+  const [toggle, setToggle] = React.useState(false)
   
   React.useEffect(() => {
     let array = []
@@ -37,7 +37,30 @@ function App() {
   }
 
   function checkWin() {
-    return tenzies ? setCheckWinState(true): setCheckWinState(false)
+    return setToggle(!toggle)
+  }
+
+  React.useEffect(() => {
+    const timing = setTimeout(() => {
+      toggle && setToggle(!toggle)
+    }, 3000)
+
+    return () => {
+      clearTimeout(timing)
+    }
+  }, [toggle])
+
+  function winScript () {
+    let value = <h1></h1>
+    if (tenzies && toggle) {
+      value = <h1 className='Check-Win'>Congratulations!</h1>
+      return value
+    } else if (!tenzies && toggle) {
+      value = <h1 className='Check-Lose'>Keep trying!</h1>
+      return value
+    } else {
+      return 
+    }
   }
 
   function randomiseDice () {
@@ -61,13 +84,24 @@ function App() {
   })
 
   return (
-    <main className="App">
-      <div className='Container'>
-        {renderDieComponent}
+    <main className="Main">
+      <section className='Intro'>
+        <h1>Tenzies!</h1>
+        <h3>The Rules are simple!</h3>
+        <p>You need to get all ten numbers to be the same. You can hold a numbers value by clicking on the number.</p>
+      </section>
+      <div className='Game-Container'>
+        <div className='Die-Container'>
+          {renderDieComponent}
+        </div>
+        <div className='Button-Container'>
+          {tenzies ? <button onClick = {resetGame}>New Game</button> : <button onClick = {randomiseDice}>Roll</button>}
+          <button onClick = {checkWin}>Check Win</button>
+        </div>
+        <div className='Win-Script-Container'>
+          {winScript()}
+        </div>
       </div>
-      {tenzies ? <button onClick = {resetGame}>New Game</button> : <button onClick = {randomiseDice}>Roll</button>}
-      <button onClick = {checkWin}>Check Win</button> 
-      {checkWinState ? <h1>Congratulations YOU WON!</h1> : <h1>Keep trying!</h1>}
     </main>
   );
 }
